@@ -9,14 +9,14 @@ steps:
   clone:
     title: "Cloning repository"
     type: "git-clone"
-    repo: "codefreshdemo/demochat"
-    revision: "master"
+    repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
+    revision: "${{CF_REVISION}}"
     stage: "clone"
 
   build_dev_image:
     title: "Building Dev image"
     type: "build"
-    image_name: "codefreshdemo/demochat"
+    image_name: "ahromis/demochat"
     working_directory: "${{clone}}"
     tag: "dev"
     dockerfile: "Dockerfile.dev"
@@ -24,22 +24,22 @@ steps:
 
   test:
     title: "Running test"
-    type: "freestyle" 
-    image: ${{build_dev_image}} 
+    type: "freestyle"
+    image: ${{build_dev_image}}
     working_directory: /root/demochat
     commands:
       - 'npm run test'
     stage: "unit"
-  
+
   build_image:
     title: "Building App image"
     type: "build"
-    image_name: "codefreshdemo/demochat"
+    image_name: "ahromis/demochat"
     working_directory: "${{clone}}"
     tag: "dev"
     dockerfile: "Dockerfile"
     stage: "build"
-    
+
   integration_step:
     type: composition
     stage: 'integration'
@@ -57,5 +57,5 @@ steps:
     composition-candidates:
       main:
         image: nhoag/curl
-        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'    
+        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
