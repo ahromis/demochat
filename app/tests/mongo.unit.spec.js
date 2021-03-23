@@ -11,9 +11,9 @@ var TestSchema = new mongoose.Schema({
 });
 var Entity = mongoose.model('Test1', TestSchema);
 var enitytToSave = new Entity({testField:'test1123232'});
-var dbRemote = 'mongodb://admin:hpadmin@ds037415.mongolab.com:37415/hp_mongo';
-var db_local = 'mongodb://192.168.99.100:27017/hp_mongo';
-var db_docker = 'mongodb://mongo:27017/hp_mongo';
+// var dbRemote = 'mongodb://admin:hpadmin@ds037415.mongolab.com:37415/hp_mongo';
+// var db_local = 'mongodb://192.168.99.100:27017/hp_mongo';
+var db = 'mongodb://mongo:27017/hp_mongo';
 
 describe('sanity tests', function(done){
 
