@@ -102,5 +102,5 @@ steps:
     cluster: k3s
     namespace: prod-demochat
     file_path: ./deployment.prod.yml
-    stage: "deploy"
+    stage: "prod-deploy"
 
