@@ -131,7 +131,7 @@ steps:
       - cluster: k3s
         namespace: prod-demochat
 
-  staging_deploy_test:
+  prod_deploy_test:
     title: "Test production deployment"
     image: "curlimages/curl:7.75.0"
     commands:
