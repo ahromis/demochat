@@ -5,9 +5,9 @@ stages:
   - "build"
   - "integration"
   - "shared-volume"
-  - "deploy"
+  - "deploy-staging"
   - "approval"
-  - "prod-deploy"
+  - "deploy-prod"
 
 steps:
   clone:
@@ -75,14 +75,31 @@ steps:
       - cp ./deploy/deployment.prod.yml /codefresh/volume/deployment.prod.yml
     stage: "shared-volume"
 
-  kube_deploy:
+  kube_staging_deploy:
     title: "Deploying to staging environment"
     type: deploy
     kind: kubernetes
     cluster: k3s
     namespace: qa-demochat
     file_path: ./deployment.yml
-    stage: "deploy"
+    stage: "deploy-staging"
+    env:
+      name: staging
+      endpoints:
+      - name: Main
+        url: http://demochat.qa.deerwald.com
+      type: kubernetes
+      change: Updated
+      filters:
+      - cluster: k3s
+        namespace: qa-demochat
+
+#  staging_deploy_test:
+#    title: "Test staging deployment"
+#      image: curlimages/curl:7.75.0
+#      commands:
+#        -  sh -c "sleep 30 && curl http://demochat.qa.deerwald.com" | grep "Toronto"
+#    stage: "deploy-staging"
 
   step_name:
     type: pending-approval
@@ -102,5 +119,22 @@ steps:
     cluster: k3s
     namespace: prod-demochat
     file_path: ./deployment.prod.yml
-    stage: "prod-deploy"
+    stage: "deploy-prod"
+    env:
+      name: production
+      endpoints:
+      - name: Main
+        url: http://demochat.deerwald.com
+      type: kubernetes
+      change: Updated
+      filters:
+      - cluster: k3s
+        namespace: prod-demochat
+
+#  staging_deploy_test:
+#    title: "Test production deployment"
+#      image: curlimages/curl:7.75.0
+#      commands:
+#        -  sh -c "sleep 30 && curl http://demochat.deerwald.com" | grep "Toronto"
+#    stage: "deploy-prod"
 
