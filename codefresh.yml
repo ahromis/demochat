@@ -95,7 +95,7 @@ steps:
         only: [ kickabout ]
     stage: "approval"
 
-  kube_deploy:
+  kube_prod_deploy:
     title: "Deploying to production environment"
     type: deploy
     kind: kubernetes
