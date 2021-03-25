@@ -96,9 +96,9 @@ steps:
 
   staging_deploy_test:
     title: "Test staging deployment"
-      image: "curlimages/curl:7.75.0"
-      commands:
-        -  sh -c "sleep 30 && curl http://demochat.qa.deerwald.com" | grep "Toronto"
+    image: "curlimages/curl:7.75.0"
+    commands:
+      -  sh -c "sleep 30 && curl http://demochat.qa.deerwald.com" | grep "Toronto"
     stage: "deploy-staging"
 
   step_name:
@@ -133,8 +133,8 @@ steps:
 
   staging_deploy_test:
     title: "Test production deployment"
-      image: "curlimages/curl:7.75.0"
-      commands:
-        -  sh -c "sleep 30 && curl http://demochat.deerwald.com" | grep "Toronto"
+    image: "curlimages/curl:7.75.0"
+    commands:
+      -  sh -c "sleep 30 && curl http://demochat.deerwald.com" | grep "Toronto"
     stage: "deploy-prod"
 
