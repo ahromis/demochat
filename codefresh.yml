@@ -4,6 +4,8 @@ stages:
   - "unit"
   - "build"
   - "integration"
+  - "shared-volume"
+  - "deploy"
 
 steps:
   clone:
@@ -59,10 +61,20 @@ steps:
         image: nhoag/curl
         command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
+  copy_to_shared_volume:
+    title: "Copy file to shared volume"
+    type: "freestyle"
+    image: alpine:3.9
+    working_directory: "${{clone}}"
+    commands:
+      - ls -l /codefresh/volume/
+      - cp ./deploy/deployment.yml /codefresh/volume/deployment.yml
+    stage: "shared-volume"
+
   kube_deploy:
     title: deploying to cluster
     type: deploy
     kind: kubernetes
     cluster: k3s
     namespace: qa-demochat
-    file_path: ./deploy/deployment.yml
+    file_path: ./deployment.yml
