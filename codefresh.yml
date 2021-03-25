@@ -89,7 +89,7 @@ steps:
       - name: Main
         url: http://demochat.qa.deerwald.com
       type: kubernetes
-      change: Updated
+      change: '${{CF_COMMIT_MESSAGE}}'
       filters:
       - cluster: k3s
         namespace: qa-demochat
@@ -126,7 +126,7 @@ steps:
       - name: Main
         url: http://demochat.deerwald.com
       type: kubernetes
-      change: Updated
+      change: '${{CF_COMMIT_MESSAGE}}'
       filters:
       - cluster: k3s
         namespace: prod-demochat
