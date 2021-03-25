@@ -59,3 +59,10 @@ steps:
         image: nhoag/curl
         command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
+  kube_deploy:
+    title: deploying to cluster
+    type: deploy
+    kind: kubernetes
+    cluster: k3s
+    namespace: qa-demochat
+    file_path: ./deploy/deployment.yml
