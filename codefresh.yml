@@ -65,7 +65,7 @@ steps:
         command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
   copy_to_shared_volume:
-    title: "Copy file to shared volume"
+    title: "Copy files to shared volume"
     type: "freestyle"
     image: alpine:3.9
     working_directory: "${{clone}}"
