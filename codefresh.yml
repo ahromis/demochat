@@ -6,6 +6,8 @@ stages:
   - "integration"
   - "shared-volume"
   - "deploy"
+  - "approval"
+  - "prod-deploy"
 
 steps:
   clone:
@@ -25,7 +27,7 @@ steps:
     stage: "unit"
 
   test:
-    title: "Running test"
+    title: "Running unit tests"
     type: "freestyle"
     image: ${{build_dev_image}}
     working_directory: /root/demochat
@@ -43,6 +45,7 @@ steps:
     stage: "build"
 
   integration_step:
+    title: "Running integration tests"
     type: composition
     stage: 'integration'
     composition:
@@ -69,12 +72,35 @@ steps:
     commands:
       - ls -l /codefresh/volume/
       - cp ./deploy/deployment.yml /codefresh/volume/deployment.yml
+      - cp ./deploy/deployment.prod.yml /codefresh/volume/deployment.prod.yml
     stage: "shared-volume"
 
   kube_deploy:
-    title: deploying to cluster
+    title: "Deploying to staging environment"
     type: deploy
     kind: kubernetes
     cluster: k3s
     namespace: qa-demochat
     file_path: ./deployment.yml
+    stage: "deploy"
+
+  step_name:
+    type: pending-approval
+    title: "Pending approval"
+    timeout:
+      duration: 8
+      finalState: approved
+    when:
+      branch:
+        only: [ kickabout ]
+    stage: "approval"
+
+  kube_deploy:
+    title: "Deploying to production environment"
+    type: deploy
+    kind: kubernetes
+    cluster: k3s
+    namespace: prod-demochat
+    file_path: ./deployment.prod.yml
+    stage: "deploy"
+

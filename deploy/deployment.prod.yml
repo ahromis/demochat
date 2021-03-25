@@ -89,7 +89,7 @@ metadata:
   name: demochat
 spec:
   rules:
-    - host: demochat.qa.deerwald.com
+    - host: demochat.deerwald.com
       http:
         paths:
           - backend:
