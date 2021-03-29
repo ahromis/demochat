@@ -40,7 +40,7 @@ steps:
     type: "build"
     image_name: "ahromis/demochat"
     working_directory: "${{clone}}"
-    tag: "dev"
+    tag: "${{CF_BRANCH}}"
     dockerfile: "Dockerfile"
     stage: "build"
 
