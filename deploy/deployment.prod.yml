@@ -73,7 +73,7 @@ spec:
     spec:
       containers:
       - name: demochat
-        image: ahromis/demochat:{{CF_BRANCH}}
+        image: ahromis/demochat:{{CF_SHORT_REVISION}}
         imagePullPolicy: Always
         resources:
           requests:
