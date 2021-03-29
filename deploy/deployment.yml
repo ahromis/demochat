@@ -74,6 +74,7 @@ spec:
       containers:
       - name: demochat
         image: ahromis/demochat:{{CF_BRANCH}}
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 100m
