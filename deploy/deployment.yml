@@ -73,7 +73,7 @@ spec:
     spec:
       containers:
       - name: demochat
-        image: ahromis/demochat:kickabout
+        image: ahromis/demochat:{{CF_BRANCH}}
         resources:
           requests:
             cpu: 100m
