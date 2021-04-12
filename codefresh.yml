@@ -20,7 +20,7 @@ steps:
       action: push
       chart_name: charts/demochat
       helm_version: 3.0.3
-      chart_repo_url: 'cm://h.cfcr.io/deerwald/demochat'
+      chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
 #  deployStaging:
 #    title: Deploying to Staging
