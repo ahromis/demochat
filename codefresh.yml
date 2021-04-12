@@ -22,29 +22,29 @@ steps:
       helm_version: 3.0.3
       chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
-  deployStaging:
-    title: Deploying to Staging
-    type: helm
-    stage: staging
-    working_directory: ./demochat
-    arguments:
-      action: install
-      chart_name: charts/demochat
-      release_name: demochat-staging
-      helm_version: 3.0.3
-      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
-      namespace: staging
-      custom_value_files:
-      - ./helm/values-staging.yaml
+#  deployStaging:
+#    title: Deploying to Staging
+#    type: helm
+#    stage: staging
+#    working_directory: ./demochat
+#    arguments:
+#      action: install
+#      chart_name: charts/demochat
+#      release_name: demochat-staging
+#      helm_version: 3.0.3
+#      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+#      namespace: staging
+#      custom_value_files:
+#      - ./helm/values-staging.yaml
 
-   env:
-      name: Demochat Staging
-      endpoints:
-      - name: app
-        url: https://demochat.qa.deerwald.com
-      type: helm-release
-      change: '${{CF_COMMIT_MESSAGE}}'
-      filters:
-      - cluster: gke_codefresh-309818_us-central1-c_codefresh
-        namespace: demochat-staging
+#   env:
+#      name: Demochat Staging
+#      endpoints:
+#      - name: app
+#        url: https://demochat.qa.deerwald.com
+#      type: helm-release
+#      change: '${{CF_COMMIT_MESSAGE}}'
+#      filters:
+#      - cluster: gke_codefresh-309818_us-central1-c_codefresh
+#        namespace: demochat-staging
 
