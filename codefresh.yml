@@ -1,9 +1,5 @@
 version: "1.0"
 stages:
-  - "clone"
-  - "unit"
-  - "build"
-  - "integration"
   - "deploy"
 
 steps:
@@ -14,53 +10,6 @@ steps:
     revision: "${{CF_REVISION}}"
     stage: "clone"
 
-  build_dev_image:
-    title: "Building Dev image"
-    type: "build"
-    image_name: "ahromis/demochat"
-    working_directory: "${{clone}}"
-    tag: "dev"
-    dockerfile: "Dockerfile.dev"
-    stage: "unit"
-
-  test:
-    title: "Running unit tests"
-    type: "freestyle"
-    image: ${{build_dev_image}}
-    working_directory: /root/demochat
-    commands:
-      - 'npm run test'
-    stage: "unit"
-
-  build_image:
-    title: "Building App image"
-    type: "build"
-    image_name: "ahromis/demochat"
-    working_directory: "${{clone}}"
-    tag: "${{CF_SHORT_REVISION}}"
-    dockerfile: "Dockerfile"
-    stage: "build"
-
-  integration_step:
-    title: "Running integration tests"
-    type: composition
-    stage: 'integration'
-    composition:
-      version: '2'
-      services:
-        app:
-          image: ${{build_image}}
-          links:
-            - mongo
-          ports:
-            - 5000
-        mongo:
-          image: mongo
-    composition-candidates:
-      main:
-        image: nhoag/curl
-        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
-
   deploy:
     title: Storing Helm chart
     type: helm
@@ -69,7 +18,7 @@ steps:
     arguments:
       action: push
       chart_name: charts/demochat
-      helm_version: 3.5.0
+      helm_version: 3.0.3
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
 
 #  deployStaging:
