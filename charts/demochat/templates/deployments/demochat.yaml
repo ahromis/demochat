@@ -15,8 +15,8 @@ spec:
         tier: frontend
     spec:
       containers:
-      - name: {{ template "demochat.name" . }}-{{ .Values.demochat.name }}
-        image: "{{ .Values.demochat.image.repository }}:{{ .Values.demochat.image.tag }}"
-        imagePullPolicy: "{{ .Values.demochat.image.pullPolicy }}"
+      - name: demochat
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
         ports:
         - containerPort: 5000
