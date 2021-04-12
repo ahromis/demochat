@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demochat
+spec:
+  selector:
+    matchLabels:
+      app: demochat
+      tier: frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: demochat
+        tier: frontend
+    spec:
+      containers:
+      - name: {{ template "demochat.name" . }}-{{ .Values.demochat.name }}
+        image: "{{ .Values.demochat.image.repository }}:{{ .Values.demochat.image.tag }}"
+        imagePullPolicy: "{{ .Values.demochat.image.pullPolicy }}"
+        ports:
+        - containerPort: 5000

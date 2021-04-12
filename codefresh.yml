@@ -4,10 +4,7 @@ stages:
   - "unit"
   - "build"
   - "integration"
-  - "shared-volume"
-  - "deploy-staging"
-  - "approval"
-  - "deploy-prod"
+  - "deploy"
 
 steps:
   clone:
@@ -64,77 +61,40 @@ steps:
         image: nhoag/curl
         command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
-  copy_to_shared_volume:
-    title: "Copy files to shared volume"
-    type: "freestyle"
-    image: alpine:3.9
-    working_directory: "${{clone}}"
-    commands:
-      - ls -l /codefresh/volume/
-      - cp ./deploy/deployment.yml /codefresh/volume/deployment.yml
-      - cp ./deploy/deployment.prod.yml /codefresh/volume/deployment.prod.yml
-    stage: "shared-volume"
+  deploy:
+    title: Storing Helm chart
+    type: helm
+    stage: deploy
+    working_directory: ./demochat
+    arguments:
+      action: push
+      chart_name: charts/demochat
+      helm_version: 3.5.0
+      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
 
-  kube_staging_deploy:
-    title: "Deploying to staging environment"
-    type: deploy
-    kind: kubernetes
-    cluster: k3s
-    namespace: qa-demochat
-    file_path: ./deployment.yml
-    stage: "deploy-staging"
-    env:
-      name: staging
-      endpoints:
-      - name: Main
-        url: http://demochat.qa.deerwald.com
-      type: kubernetes
-      change: '${{CF_COMMIT_MESSAGE}}'
-      filters:
-      - cluster: k3s
-        namespace: qa-demochat
+#  deployStaging:
+#    title: Deploying to Staging
+#    type: helm
+#    stage: staging
+#    working_directory: ./demochat
+#    arguments:
+#      action: install
+#      chart_name: charts/demochat
+#      release_name: demochat-staging
+#      helm_version: 3.5.0
+#      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+#      namespace: staging
+#      custom_value_files:
+#      - ./helm/values-staging.yaml
 
-  staging_deploy_test:
-    title: "Test staging deployment"
-    image: "curlimages/curl:7.75.0"
-    commands:
-      -  sh -c "sleep 20 && curl http://demochat.qa.deerwald.com/login" | grep "Toronto"
-    stage: "deploy-staging"
-
-  step_name:
-    type: pending-approval
-    title: "Pending approval"
-    timeout:
-      duration: 8
-      finalState: approved
-    when:
-      branch:
-        only: [ kickabout ]
-    stage: "approval"
-
-  kube_prod_deploy:
-    title: "Deploying to production environment"
-    type: deploy
-    kind: kubernetes
-    cluster: k3s
-    namespace: prod-demochat
-    file_path: ./deployment.prod.yml
-    stage: "deploy-prod"
-    env:
-      name: production
-      endpoints:
-      - name: Main
-        url: http://demochat.deerwald.com
-      type: kubernetes
-      change: '${{CF_COMMIT_MESSAGE}}'
-      filters:
-      - cluster: k3s
-        namespace: prod-demochat
-
-  prod_deploy_test:
-    title: "Test production deployment"
-    image: "curlimages/curl:7.75.0"
-    commands:
-      -  sh -c "sleep 20 && curl http://demochat.deerwald.com/login" | grep "Toronto"
-    stage: "deploy-prod"
+#   env:
+#      name: Demochat Staging
+#      endpoints:
+#      - name: app
+#        url: https://demochat.qa.deerwald.com
+#      type: helm-release
+#      change: '${{CF_COMMIT_MESSAGE}}'
+#      filters:
+#      - cluster: gke_codefresh-309818_us-central1-c_codefresh
+#        namespace: demochat-staging
 

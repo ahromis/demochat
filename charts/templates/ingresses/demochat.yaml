@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: demochat
+spec:
+  rules:
+    - host: "{{ .Values.demochat.ingress.hosts }}"
+      http:
+        paths:
+          - backend:
+              serviceName: demochat
+              servicePort: 5000
+            path: /
