@@ -126,6 +126,7 @@ steps:
     type: argocd-sync
     stage: prod
     arguments:
+      context: argocd.deerwald.com
       app_name: demochat-prod
     env:
       name: Demochat Production
