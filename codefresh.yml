@@ -6,6 +6,7 @@ stages:
   - "integration"
   - "store"
   - "staging"
+  - "prod"
 
 steps:
   clone:
@@ -41,6 +42,22 @@ steps:
     tag: "${{CF_SHORT_REVISION}}"
     dockerfile: "Dockerfile"
     stage: "build"
+
+  integration_step:
+    title: "Running integration tests"
+    stage: "integration"
+    image: nhoag/curl:latest
+    command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+    services:
+      composition:
+        mongo:
+          image: mongo:latest
+          ports:
+            - 27017
+        app:
+          image: ${{build_image}}
+          ports:
+            - 5000
 
 #  integration_step:
 #    title: "Running integration tests"
@@ -124,6 +141,50 @@ steps:
       namespace: demochat-staging
       custom_value_files:
       - ./charts/demochat/values.qa.yaml
+      custom_values:
+       - 'image_tag=${{CF_SHORT_REVISION}}'
+
+  deployStaging:
+    title: Deploying to Staging
+    type: helm
+    stage: prod
+    working_directory: "${{clone}}"
+    arguments:
+      action: install
+      chart_name: charts/demochat
+      release_name: demochat-prod
+      helm_version: 3.0.3
+      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+      namespace: demochat-prod
+      custom_value_files:
+      - ./charts/demochat/values.yaml
+      custom_values:
+       - 'image_tag=${{CF_SHORT_REVISION}}'
+    env:
+      name: Demochat Staging
+      endpoints:
+      - name: app
+        url: https://demochat.deerwald.com
+      type: helm-release
+      change: '${{CF_COMMIT_MESSAGE}}'
+      filters:
+      - cluster: gke_codefresh-309818_us-central1-c_codefresh
+        namespace: demochat-prod
+
+  testStaging:
+    title: Smoke test production
+    type: helm
+    stage: prod
+    working_directory: "${{clone}}"
+    arguments:
+      action: test
+      chart_name: charts/demochat
+      release_name: demochat-prod
+      helm_version: 3.0.3
+      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+      namespace: demochat-prod
+      custom_value_files:
+      - ./charts/demochat/values.yaml
       custom_values:
        - 'image_tag=${{CF_SHORT_REVISION}}'
 
