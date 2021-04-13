@@ -16,23 +16,23 @@ steps:
     revision: "${{CF_REVISION}}"
     stage: "clone"
 
-#  build_dev_image:
-#    title: "Building Dev image"
-#    type: "build"
-#    image_name: "ahromis/demochat"
-#    working_directory: "${{clone}}"
-#    tag: "dev"
-#    dockerfile: "Dockerfile.dev"
-#    stage: "unit"
+  build_dev_image:
+    title: "Building Dev image"
+    type: "build"
+    image_name: "ahromis/demochat"
+    working_directory: "${{clone}}"
+    tag: "dev"
+    dockerfile: "Dockerfile.dev"
+    stage: "unit"
 
-#  test:
-#    title: "Running unit tests"
-#    type: "freestyle"
-#    image: ${{build_dev_image}}
-#    working_directory: /root/demochat
-#    commands:
-#      - 'npm run test'
-#    stage: "unit"
+  test:
+    title: "Running unit tests"
+    type: "freestyle"
+    image: ${{build_dev_image}}
+    working_directory: /root/demochat
+    commands:
+      - 'npm run test'
+    stage: "unit"
 
   build_image:
     title: "Building App image"
@@ -45,66 +45,44 @@ steps:
 
   integration_step:
     title: "Running integration tests"
-    stage: "integration"
-    image: 'byrnedo/alpine-curl'
-    commands:
-      - curl http://app:5000/ | echo 'works'
-    services:
-      composition:
-        mongo:
-          image: mongo:latest
-          ports:
-            - 27017
+    type: composition
+    stage: 'integration'
+    composition:
+      version: '2'
+      services:
         app:
           image: ${{build_image}}
+          links:
+            - mongo
           ports:
             - 5000
-      readiness:
-        image: 'byrnedo/alpine-curl'
-        timeoutSeconds: 30
-        commands:
-          - "curl http://app:5000"
+        mongo:
+          image: mongo
+    composition-candidates:
+      main:
+        image: nhoag/curl
+        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
-#  integration_step:
-#    title: "Running integration tests"
-#    type: composition
-#    stage: 'integration'
-#    composition:
-#      version: '2'
-#      services:
-#        app:
-#          image: ${{build_image}}
-#          links:
-#            - mongo
-#          ports:
-#            - 5000
-#        mongo:
-#          image: mongo
-#    composition-candidates:
-#      main:
-#        image: nhoag/curl
-#        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+  storeChart:
+    title: Storing Helm chart
+    type: helm
+    stage: store
+    working_directory: ./demochat
+    arguments:
+      action: push
+      chart_name: charts/demochat
+      helm_version: 3.0.3
+      chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
-#  storeChart:
-#    title: Storing Helm chart
-#    type: helm
-#    stage: store
-#    working_directory: ./demochat
-#    arguments:
-#      action: push
-#      chart_name: charts/demochat
-#      helm_version: 3.0.3
-#      chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
-
-#  copy_to_shared_volume:
-#    title: "Debug step"
-#    stage: store
-#    type: "freestyle"
-#    image: alpine:3.9
-#    working_directory: "${{clone}}"
-#    commands:
-#      - ls -l
-#      - ls -l ./charts/demochat/
+  copy_to_shared_volume:
+    title: "Debug step"
+    stage: store
+    type: "freestyle"
+    image: alpine:3.9
+    working_directory: "${{clone}}"
+    commands:
+      - ls -l
+      - ls -l ./charts/demochat/
 
   deployStaging:
     title: Deploying to Staging
