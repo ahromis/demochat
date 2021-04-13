@@ -31,11 +31,12 @@ steps:
 
   integration_step:
     title: "Running integration tests"
+    type: "integration"
     image: ${{build_image}}
+    working_directory: /root/demochat
     services:
       composition:
         mongo:
           image: mongo:latest
           ports:
             - 27017
-
