@@ -36,4 +36,6 @@ steps:
       composition:
         mongo:
           image: mongo:latest
-          ports: 27017
+          ports:
+            - 27017
+
