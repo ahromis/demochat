@@ -1,11 +1,11 @@
 version: "1.0"
 stages:
   - "clone"
-  - "unit"
+#  - "unit"
   - "build"
-  - "integration"
+#  - "integration"
   - "store"
-  - "staging"
+#  - "staging"
   - "prod"
 
 steps:
@@ -16,23 +16,23 @@ steps:
     revision: "${{CF_REVISION}}"
     stage: "clone"
 
-  build_dev_image:
-    title: "Building Dev image"
-    type: "build"
-    image_name: "ahromis/demochat"
-    working_directory: "${{clone}}"
-    tag: "dev"
-    dockerfile: "Dockerfile.dev"
-    stage: "unit"
+#  build_dev_image:
+#    title: "Building Dev image"
+#    type: "build"
+#    image_name: "ahromis/demochat"
+#    working_directory: "${{clone}}"
+#    tag: "dev"
+#    dockerfile: "Dockerfile.dev"
+#    stage: "unit"
 
-  test:
-    title: "Running unit tests"
-    type: "freestyle"
-    image: ${{build_dev_image}}
-    working_directory: /root/demochat
-    commands:
-      - 'npm run test'
-    stage: "unit"
+#  test:
+#    title: "Running unit tests"
+#    type: "freestyle"
+#    image: ${{build_dev_image}}
+#    working_directory: /root/demochat
+#    commands:
+#      - 'npm run test'
+#    stage: "unit"
 
   build_image:
     title: "Building App image"
@@ -46,25 +46,25 @@ steps:
     dockerfile: "Dockerfile"
     stage: "build"
 
-  integration_step:
-    title: "Running integration tests"
-    type: composition
-    stage: 'integration'
-    composition:
-      version: '2'
-      services:
-        app:
-          image: ${{build_image}}
-          links:
-            - mongo
-          ports:
-            - 5000
-        mongo:
-          image: mongo
-    composition-candidates:
-      main:
-        image: nhoag/curl
-        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+#  integration_step:
+#    title: "Running integration tests"
+#    type: composition
+#    stage: 'integration'
+#    composition:
+#      version: '2'
+#      services:
+#        app:
+#          image: ${{build_image}}
+#          links:
+#            - mongo
+#          ports:
+#            - 5000
+#        mongo:
+#          image: mongo
+#    composition-candidates:
+#      main:
+#        image: nhoag/curl
+#        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
   storeChart:
     title: Storing Helm chart
@@ -77,56 +77,56 @@ steps:
       helm_version: 3.0.3
       chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
-  deployStaging:
-    title: Deploying to Staging
-    type: helm
-    stage: staging
-    working_directory: "${{clone}}"
-    arguments:
-      action: install
-      chart_name: charts/demochat
-      release_name: demochat-staging
-      helm_version: 3.0.3
-      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
-      namespace: demochat-staging
-      custom_value_files:
-      - ./charts/demochat/values.qa.yaml
-      custom_values:
-       - 'image_tag=${{CF_SHORT_REVISION}}'
-    env:
-      name: Demochat Staging
-      endpoints:
-      - name: app
-        url: https://demochat.qa.deerwald.com
-      type: helm-release
-      change: '${{CF_COMMIT_MESSAGE}}'
-      filters:
-      - cluster: gke_codefresh-309818_us-central1-c_codefresh
-        namespace: demochat-staging
+#  deployStaging:
+#    title: Deploying to Staging
+#    type: helm
+#    stage: staging
+#    working_directory: "${{clone}}"
+#    arguments:
+#      action: install
+#      chart_name: charts/demochat
+#      release_name: demochat-staging
+#      helm_version: 3.0.3
+#      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+#      namespace: demochat-staging
+#      custom_value_files:
+#      - ./charts/demochat/values.qa.yaml
+#      custom_values:
+#       - 'image_tag=${{CF_SHORT_REVISION}}'
+#    env:
+#      name: Demochat Staging
+#      endpoints:
+#      - name: app
+#        url: https://demochat.qa.deerwald.com
+#      type: helm-release
+#      change: '${{CF_COMMIT_MESSAGE}}'
+#      filters:
+#      - cluster: gke_codefresh-309818_us-central1-c_codefresh
+#        namespace: demochat-staging
 
-  testStaging:
-    title: Smoke test staging
-    type: helm
-    stage: staging
-    working_directory: "${{clone}}"
-    arguments:
-      action: test
-      chart_name: charts/demochat
-      release_name: demochat-staging
-      helm_version: 3.0.3
-      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
-      namespace: demochat-staging
-      custom_value_files:
-      - ./charts/demochat/values.qa.yaml
-      custom_values:
-       - 'image_tag=${{CF_SHORT_REVISION}}'
+#  testStaging:
+#    title: Smoke test staging
+#    type: helm
+#    stage: staging
+#    working_directory: "${{clone}}"
+#    arguments:
+#      action: test
+#      chart_name: charts/demochat
+#      release_name: demochat-staging
+#      helm_version: 3.0.3
+#      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+#      namespace: demochat-staging
+#      custom_value_files:
+#      - ./charts/demochat/values.qa.yaml
+#      custom_values:
+#       - 'image_tag=${{CF_SHORT_REVISION}}'
 
   deployProd:
     title: Sync application with ArgoCD
     type: argocd-sync
     stage: prod
     arguments:
-      context: argocd.deerwald.com
+      host: https://argocd.deerwald.com
       app_name: demochat-prod
     env:
       name: Demochat Production
