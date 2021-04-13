@@ -81,7 +81,7 @@ steps:
     working_directory: "${{clone}}"
     commands:
       - ls -l
-      - ls -l ./charts
+      - ls -l ./charts/demochat/
 
   deployStaging:
     title: Deploying to Staging
@@ -96,7 +96,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: staging
       custom_value_files:
-      - ./values-staging.yaml
+      - ./values.qa.yaml
     env:
       name: Demochat Staging
       endpoints:
@@ -121,7 +121,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: staging
       custom_value_files:
-      - ./values-staging.yaml
+      - ./values.qa.yaml
       custom_values:
        - "image_tag=${{CF_REVISION}}"
 
