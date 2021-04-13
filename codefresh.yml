@@ -7,7 +7,7 @@ stages:
 services:
   name: mongo
   composition:
-    mongo-db-host:
+    mongo:
       image: mongo:latest
       ports:
         - 27017
