@@ -74,16 +74,6 @@ steps:
       helm_version: 3.0.3
       chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
-  copy_to_shared_volume:
-    title: "Debug step"
-    stage: store
-    type: "freestyle"
-    image: alpine:3.9
-    working_directory: "${{clone}}"
-    commands:
-      - ls -l
-      - ls -l ./charts/demochat/
-
   deployStaging:
     title: Deploying to Staging
     type: helm
