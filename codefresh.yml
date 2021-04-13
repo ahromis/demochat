@@ -62,26 +62,26 @@ steps:
 #        image: nhoag/curl
 #        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
-  storeChart:
-    title: Storing Helm chart
-    type: helm
-    stage: store
-    working_directory: ./demochat
-    arguments:
-      action: push
-      chart_name: charts/demochat
-      helm_version: 3.0.3
-      chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
+#  storeChart:
+#    title: Storing Helm chart
+#    type: helm
+#    stage: store
+#    working_directory: ./demochat
+#    arguments:
+#      action: push
+#      chart_name: charts/demochat
+#      helm_version: 3.0.3
+#      chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
-  copy_to_shared_volume:
-    title: "Debug step"
-    stage: store
-    type: "freestyle"
-    image: alpine:3.9
-    working_directory: "${{clone}}"
-    commands:
-      - ls -l
-      - ls -l ./charts/demochat/
+#  copy_to_shared_volume:
+#    title: "Debug step"
+#    stage: store
+#    type: "freestyle"
+#    image: alpine:3.9
+#    working_directory: "${{clone}}"
+#    commands:
+#      - ls -l
+#      - ls -l ./charts/demochat/
 
   deployStaging:
     title: Deploying to Staging
@@ -94,7 +94,7 @@ steps:
       release_name: demochat-staging
       helm_version: 3.0.3
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
-      namespace: staging
+      namespace: demochat-staging
       custom_value_files:
       - ./charts/demochat/values.qa.yaml
     env:
@@ -119,7 +119,7 @@ steps:
       release_name: demochat-staging
       helm_version: 3.0.3
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
-      namespace: staging
+      namespace: demochat-staging
       custom_value_files:
       - ./charts/demochat/values.qa.yaml
       custom_values:
