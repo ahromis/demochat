@@ -46,8 +46,9 @@ steps:
   integration_step:
     title: "Running integration tests"
     stage: "integration"
-    image: nhoag/curl:latest
-    command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+    image: 'byrnedo/alpine-curl'
+    commands:
+      - curl http://app:5000/ | echo 'works'
     services:
       composition:
         mongo:
@@ -58,6 +59,11 @@ steps:
           image: ${{build_image}}
           ports:
             - 5000
+      readiness:
+        image: 'byrnedo/alpine-curl'
+        timeoutSeconds: 30
+        commands:
+          - "curl http://app:5000"
 
 #  integration_step:
 #    title: "Running integration tests"
