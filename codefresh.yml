@@ -4,9 +4,7 @@ stages:
   - "unit"
   - "build"
   - "integration"
-  - "deploy-staging"
-  - "deploy-prod"
-
+  - "staging"
 
 steps:
   clone:
