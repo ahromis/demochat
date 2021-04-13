@@ -15,23 +15,23 @@ steps:
     revision: "${{CF_REVISION}}"
     stage: "clone"
 
-  build_dev_image:
-    title: "Building Dev image"
-    type: "build"
-    image_name: "ahromis/demochat"
-    working_directory: "${{clone}}"
-    tag: "dev"
-    dockerfile: "Dockerfile.dev"
-    stage: "unit"
+#  build_dev_image:
+#    title: "Building Dev image"
+#    type: "build"
+#    image_name: "ahromis/demochat"
+#    working_directory: "${{clone}}"
+#    tag: "dev"
+#    dockerfile: "Dockerfile.dev"
+#    stage: "unit"
 
-  test:
-    title: "Running unit tests"
-    type: "freestyle"
-    image: ${{build_dev_image}}
-    working_directory: /root/demochat
-    commands:
-      - 'npm run test'
-    stage: "unit"
+#  test:
+#    title: "Running unit tests"
+#    type: "freestyle"
+#    image: ${{build_dev_image}}
+#    working_directory: /root/demochat
+#    commands:
+#      - 'npm run test'
+#    stage: "unit"
 
   build_image:
     title: "Building App image"
@@ -42,25 +42,25 @@ steps:
     dockerfile: "Dockerfile"
     stage: "build"
 
-  integration_step:
-    title: "Running integration tests"
-    type: composition
-    stage: 'integration'
-    composition:
-      version: '2'
-      services:
-        app:
-          image: ${{build_image}}
-          links:
-            - mongo
-          ports:
-            - 5000
-        mongo:
-          image: mongo
-    composition-candidates:
-      main:
-        image: nhoag/curl
-        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+#  integration_step:
+#    title: "Running integration tests"
+#    type: composition
+#    stage: 'integration'
+#    composition:
+#      version: '2'
+#      services:
+#        app:
+#          image: ${{build_image}}
+#          links:
+#            - mongo
+#          ports:
+#            - 5000
+#        mongo:
+#          image: mongo
+#    composition-candidates:
+#      main:
+#        image: nhoag/curl
+#        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
 
   storeChart:
     title: Storing Helm chart
@@ -72,6 +72,16 @@ steps:
       chart_name: charts/demochat
       helm_version: 3.0.3
       chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
+
+  copy_to_shared_volume:
+    title: "Copy files to shared volume"
+    stage: store
+    type: "freestyle"
+    image: alpine:3.9
+    working_directory: "${{clone}}"
+    commands:
+      - ls -l
+      - ls -l ./charts
 
   deployStaging:
     title: Deploying to Staging
