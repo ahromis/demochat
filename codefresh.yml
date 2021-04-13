@@ -126,7 +126,6 @@ steps:
     type: argocd-sync
     stage: prod
     arguments:
-      context: demochat-prod
       app_name: demochat-prod
     env:
       name: Demochat Production
