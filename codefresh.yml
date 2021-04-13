@@ -126,15 +126,5 @@ steps:
     type: argocd-sync
     stage: prod
     arguments:
-      host: https://kubernetes.default.svc
+      context: argocd.deerwald.com
       app_name: demochat-prod
-    env:
-      name: Demochat Production
-      endpoints:
-      - name: app
-        url: https://demochat.deerwald.com
-      type: helm-release
-      change: '${{CF_COMMIT_MESSAGE}}'
-      filters:
-      - cluster: gke_codefresh-309818_us-central1-c_codefresh
-        namespace: demochat-prod
