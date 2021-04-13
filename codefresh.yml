@@ -33,8 +33,3 @@ steps:
     stage: "integration"
     image: ${{build_image}}
     title: "Running Integration tests"
-    services:
-      composition:
-        smoke_test:
-          image: nhoag/curl:latest
-          command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
