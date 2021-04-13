@@ -42,6 +42,5 @@ steps:
             - 27017
         app:
           image: ${{build_image}}
-          working_directory: /root/demochat
-          commands:
-            - 'npm run start'
+          ports:
+            - 5000
