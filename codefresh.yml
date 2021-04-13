@@ -144,7 +144,7 @@ steps:
       custom_values:
        - 'image_tag=${{CF_SHORT_REVISION}}'
 
-  deployStaging:
+  deployProd:
     title: Deploying to Staging
     type: helm
     stage: prod
@@ -171,7 +171,7 @@ steps:
       - cluster: gke_codefresh-309818_us-central1-c_codefresh
         namespace: demochat-prod
 
-  testStaging:
+  testProd:
     title: Smoke test production
     type: helm
     stage: prod
