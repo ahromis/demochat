@@ -30,6 +30,7 @@ steps:
     stage: "build"
 
   integration_step:
+    stage: "integration"
     image: ${{build_image}}
     title: "Running Integration tests"
     services:
