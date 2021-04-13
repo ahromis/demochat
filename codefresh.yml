@@ -31,7 +31,7 @@ steps:
 
   integration_step:
     title: "Running integration tests"
-    type: "integration"
+    stage: "integration"
     image: ${{build_image}}
     working_directory: /root/demochat
     commands:
