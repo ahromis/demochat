@@ -39,7 +39,7 @@ steps:
     type: "build"
     image_name: "ahromis/demochat"
     working_directory: "${{clone}}"
-    tag:
+    tags:
       - "${{CF_SHORT_REVISION}}"
       - kickabout
       - latest
