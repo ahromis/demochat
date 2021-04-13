@@ -74,7 +74,7 @@ steps:
       chart_repo_url: 'cm://h.cfcr.io/deerwald/default'
 
   copy_to_shared_volume:
-    title: "Copy files to shared volume"
+    title: "Debug step"
     stage: store
     type: "freestyle"
     image: alpine:3.9
@@ -87,7 +87,7 @@ steps:
     title: Deploying to Staging
     type: helm
     stage: staging
-    working_directory: ./demochat
+    working_directory: ./charts/demochat
     arguments:
       action: install
       chart_name: charts/demochat
@@ -96,7 +96,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: staging
       custom_value_files:
-      - ./charts/demochat/values-staging.yaml
+      - ./values-staging.yaml
     env:
       name: Demochat Staging
       endpoints:
@@ -112,7 +112,7 @@ steps:
     title: Smoke test staging
     type: helm
     stage: staging
-    working_directory: ./demochat
+    working_directory: ./charts/demochat
     arguments:
       action: test
       chart_name: charts/demochat
@@ -121,7 +121,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: staging
       custom_value_files:
-      - ./charts/demochat/values-staging.yaml
+      - ./values-staging.yaml
       custom_values:
        - "image_tag=${{CF_REVISION}}"
 
