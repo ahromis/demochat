@@ -42,3 +42,6 @@ steps:
           image: mongo:latest
           ports:
             - 27017
+        smoke-test:
+          image: nhoag/curl:latest
+          command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
