@@ -87,7 +87,7 @@ steps:
     title: Deploying to Staging
     type: helm
     stage: staging
-    working_directory: ./charts/demochat
+    working_directory: "${{clone}}"
     arguments:
       action: install
       chart_name: charts/demochat
@@ -96,7 +96,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: staging
       custom_value_files:
-      - ./values.qa.yaml
+      - ./charts/demochat/values.qa.yaml
     env:
       name: Demochat Staging
       endpoints:
@@ -112,7 +112,7 @@ steps:
     title: Smoke test staging
     type: helm
     stage: staging
-    working_directory: ./charts/demochat
+    working_directory: "${{clone}}"
     arguments:
       action: test
       chart_name: charts/demochat
@@ -121,7 +121,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: staging
       custom_value_files:
-      - ./values.qa.yaml
+      - ./charts/demochat/values.qa.yaml
       custom_values:
        - "image_tag=${{CF_REVISION}}"
 
