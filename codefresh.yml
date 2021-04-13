@@ -141,7 +141,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: demochat-prod
       custom_value_files:
-      - ./charts/demochat/values.yaml
+      - ./charts/demochat/values.prod.yaml
       custom_values:
        - 'image_tag=${{CF_SHORT_REVISION}}'
     env:
@@ -168,7 +168,7 @@ steps:
       kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
       namespace: demochat-prod
       custom_value_files:
-      - ./charts/demochat/values.yaml
+      - ./charts/demochat/values.prod.yaml
       custom_values:
        - 'image_tag=${{CF_SHORT_REVISION}}'
 
