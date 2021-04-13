@@ -39,7 +39,10 @@ steps:
     type: "build"
     image_name: "ahromis/demochat"
     working_directory: "${{clone}}"
-    tag: "${{CF_SHORT_REVISION}}"
+    tag:
+      - "${{CF_SHORT_REVISION}}"
+      - kickabout
+      - latest
     dockerfile: "Dockerfile"
     stage: "build"
 
