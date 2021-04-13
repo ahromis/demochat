@@ -8,8 +8,10 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
-      image: busybox
-      command: ['wget']
-      args: ['{{ include "demochat.fullname" . }}:{{ .Values.service.port }}']
+    - name: curl
+      image: curlimages/curl:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - /bin/sh
+        - curl https://{{ .Values.ingress.hostname }}/login | grep Toronto
   restartPolicy: Never

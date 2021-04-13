@@ -1,16 +1,12 @@
 version: "1.0"
 stages:
   - "clone"
+  - "unit"
   - "build"
   - "integration"
+  - "deploy-staging"
+  - "deploy-prod"
 
-#services:
-#  name: mongo
-#  composition:
-#    mongo:
-#      image: mongo:latest
-#      ports:
-#        - 27017
 
 steps:
   clone:
@@ -19,6 +15,24 @@ steps:
     repo: "${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}"
     revision: "${{CF_REVISION}}"
     stage: "clone"
+
+  build_dev_image:
+    title: "Building Dev image"
+    type: "build"
+    image_name: "ahromis/demochat"
+    working_directory: "${{clone}}"
+    tag: "dev"
+    dockerfile: "Dockerfile.dev"
+    stage: "unit"
+
+  test:
+    title: "Running unit tests"
+    type: "freestyle"
+    image: ${{build_dev_image}}
+    working_directory: /root/demochat
+    commands:
+      - 'npm run test'
+    stage: "unit"
 
   build_image:
     title: "Building App image"
@@ -31,16 +45,63 @@ steps:
 
   integration_step:
     title: "Running integration tests"
-    stage: "integration"
-    image: nhoag/curl:latest
-    command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
-    services:
-      composition:
-        mongo:
-          image: mongo:latest
-          ports:
-            - 27017
+    type: composition
+    stage: 'integration'
+    composition:
+      version: '2'
+      services:
         app:
           image: ${{build_image}}
+          links:
+            - mongo
           ports:
             - 5000
+        mongo:
+          image: mongo
+    composition-candidates:
+      main:
+        image: nhoag/curl
+        command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+
+  deployStaging:
+    title: Deploying to Staging
+    type: helm
+    stage: staging
+    working_directory: ./demochat
+    arguments:
+      action: install
+      chart_name: charts/demochat
+      release_name: demochat-staging
+      helm_version: 3.0.3
+      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+      namespace: staging
+      custom_value_files:
+      - ./helm/values-staging.yaml
+
+   env:
+      name: Demochat Staging
+      endpoints:
+      - name: app
+        url: https://demochat.qa.deerwald.com
+      type: helm-release
+      change: '${{CF_COMMIT_MESSAGE}}'
+      filters:
+      - cluster: gke_codefresh-309818_us-central1-c_codefresh
+        namespace: demochat-staging
+
+  testStaging:
+    title: Smoke test staging
+    type: helm
+    stage: staging
+    working_directory: ./demochat
+    arguments:
+      action: test
+      chart_name: charts/demochat
+      release_name: demochat-staging
+      helm_version: 3.0.3
+      kube_context: 'gke_codefresh-309818_us-central1-c_codefresh'
+      namespace: staging
+      custom_value_files:
+      - ./helm/values-staging.yaml
+
+
