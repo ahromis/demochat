@@ -126,7 +126,7 @@ steps:
     type: argocd-sync
     stage: prod
     arguments:
-      host: https://argocd.deerwald.com
+      host: https://kubernetes.default.svc
       app_name: demochat-prod
     env:
       name: Demochat Production
