@@ -32,16 +32,16 @@ steps:
   integration_step:
     title: "Running integration tests"
     stage: "integration"
-    image: ${{build_image}}
-    working_directory: /root/demochat
-    commands:
-      - 'npm run start'
+    image: nhoag/curl:latest
+    command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
     services:
       composition:
         mongo:
           image: mongo:latest
           ports:
             - 27017
-        smoke-test:
-          image: nhoag/curl:latest
-          command: bash -c "sleep 30 && curl http://app:5000/" | echo 'works'
+        app:
+          image: ${{build_image}}
+          working_directory: /root/demochat
+          commands:
+            - 'npm run start'
