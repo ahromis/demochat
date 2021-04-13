@@ -123,6 +123,6 @@ steps:
       custom_value_files:
       - ./charts/demochat/values.qa.yaml
       custom_values:
-       - "image_tag=${{CF_REVISION}}"
+       - "image_tag=${{CF_SHORT_REVISION}}"
 
 
