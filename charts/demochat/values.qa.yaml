@@ -19,16 +19,7 @@ service:
   port: 5000
 
 ingress:
-  enabled: true
-  annotations:
-    kubernetes.io/ingress.class: nginx
-  hosts:
-    - host: demochat.qa.deerwald.com
-  tls:
-    - secretName: demochat-staging-tls
-      hosts:
-        - demochat.qa.deerwald.com
-
+  hostname: demochat.qa.deerwald.com
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
